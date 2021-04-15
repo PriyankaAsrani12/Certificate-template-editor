@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>File Template Editor</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="preload" href="/fonts/arlrdbd.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <style>
+    .btn:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    body,
+    html {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    hr {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin-top: 5px;
+    }
+
+    input[type=number] {
+      position: relative;
+      padding: 5px;
+      padding-right: 25px;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      opacity: 1;
+    }
+
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: inner-spin-button !important;
+      width: 25px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+
+    @font-face {
+      font-family: 'Arial Rounded';
+      src: url('/fonts/arlrdbd.ttf') format('truetype');
+      /* Chrome 4+, Firefox 3.5, Opera 10+, Safari 3—5 */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid h-100" style="background:#e1e1e1;">
+    <div class="row">
+      <div class="col-sm-12 my-1">
+        <span style="vertical-align: middle;font: 25px Georgia;">Certificate Generator</span>
+        <input id="temp-name" class="form-control" placeholder="Template Name" type="text"
+          style="width: 200px;display: inline;padding-top: 0px;margin-left: 8px;">
+        <input id="doc-temp-id" class="form-control" value="5f0600fc27e22e487fe3d7f3" readonly type="text"
+          style="display: none">
+        <button id="save-btn" type="button" class="btn btn-success" style="width: 100px;" onclick="save()"><i
+            class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+        <button type="button" class="btn btn-primary" style="width: 100px;" id="add-text"><i class="fa fa-font"
+            aria-hidden="true"></i> Text</button>
+        <button type="button" class="btn btn-primary" style="width: 100px;" id="add-image"><i class="fa fa-picture-o"
+            aria-hidden="true"></i> Image</button>
+        <button type="button" class="btn btn-primary" style="width: 100px;" id="add-qr"><i class="fa fa-qrcode"
+            aria-hidden="true"></i> URL QR</button>
+        <div class="btn-group" style="height: 38px">
+          <button type="button" class="btn btn-primary" onclick="downloadPreview()"><i class="fa fa-download"
+              aria-hidden="true"></i> Download</button>
+          <span class="btn btn-light border quality disabled" style="display: none;"><input type="range"
+              class="custom-range quality-val" value="92" data-toggle="tooltip" title="Quality: 92%"></span>
+          <button type="button" class="btn btn-primary" onclick="toggleQuality()"><i class="fa fa-chevron-right"
+              aria-hidden="true"></i></button>
+        </div>
+        <button type="button" class="btn btn-primary" style="width: 130px;" onclick="goBack()"><i
+            class="fa fa-chevron-circle-left" aria-hidden="true"></i> Back to App</button>
+      </div>
+    </div>
+    <div class="row h-100">
+      <div class="h-100" id="left"
+        style="background:#f1f1f1;position: absolute;overflow-y: scroll;left: 0;width: 384px;padding-left: 15px;padding-right: 15px;">
+        <div>
+          <h5 style="margin-bottom: 0px;margin-top: 8px;">Layers</h5>
+        </div>
+        <hr>
+        <div id="layers">
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="form-row">
+                <div class="col-sm-4">
+                  <img src="./back.png" class="thumbnail rounded border" id="base-image-pre" style="width: 100%"
+                    height="90px">
+                </div>
+                <div class="col-sm-8">
+                  <p id="base-image-src-name" class="filename"
+                    style="margin-bottom: 23px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">No File
+                    Selected</p>
+                  <button type="button" class="btn btn-light btn-block border"
+                    onclick="document.getElementById('base-image-src').click()"><i class="fa fa-picture-o"
+                      aria-hidden="true"></i> Load Image</button>
+                  <input id="base-image-src" class="hidden" type="file" accept=".png, .jpg, .jpeg"
+                    style="display: none;" onchange="livePreview(this)">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="height: 150px;" id="spacer"></div>
+        </div>
+      </div>
+      <div class="h-100" id="right" style="background:#ffffff;position: absolute;right: 0;">
+        <div class="text-center">
+          <canvas id="canvas" class="thumbnail rounded border" width="400" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="row fixed-bottom py-2" style="background:#e1e1e1;">
+      <div class="col-sm-1 text-right" id="doc-size">0, 0</div>
+      <div class="col-sm-1 text-right" id="mouse-pos">0, 0</div>
+      <div class="col-sm-7"><span id="user-msg"></span></div>
+      <div class="col-sm-3"><span id="current-process"></span></div>
+    </div>
+  </div>
+  <div class="modal fade" id="modal-main">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" id="modal-msg">
+      </div>
+    </div>
+  </div>
+  <datalist id="namelist">
+    <option value="Name">
+    <option value="Date">
+    <option value="Expiry">
+    <option value="Signatory">
+    <option value="QR">
+    <option value="College Name">
+    <option value="Internship Start Date">
+    <option value="Internship End Date">
+    <option value="Registration Id">
+  </datalist>
+  <img src="" alt="">
+  <script defer>
+    // let operations = `[]`;
+    // async function getop() {
+    //   await $.get("/api/database/2", async (data) => {
+    //     // console.log(data[0].temp.operations);
+    //     operations = await data[4].temp.operations;
+    //   });
+    // }
+    // getop()
+  </script>
+  <script src="qrcode.min.js"></script>
+  <script defer src="editor.js"></script>
+</body>
+
+</html>
