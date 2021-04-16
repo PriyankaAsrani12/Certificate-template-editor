@@ -139,7 +139,13 @@
               class="btn btn-primary"
               onclick="downloadPreview()"
             >
-              <i class="fa fa-download" aria-hidden="true"></i> Download
+              <i class="fa fa-download" aria-hidden="true"></i>
+              Download
+              <select id="downloadOptions">
+                <option value="jpg">jpg</option>
+                <option value="png">png</option>
+                {% comment %} <option value="pdf">pdf</option> {% endcomment %}
+              </select> 
             </button>
             <span
               class="btn btn-light border quality disabled"

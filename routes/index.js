@@ -1,7 +1,7 @@
 const route = require("express").Router();
 
+//now it will use api/database/{routes}
 route.use("/database", require("./database"));
-// route.use("/databasenewsletter", require("./databasenewsletter"));
 
 exports = module.exports = {
   route,

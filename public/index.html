@@ -81,7 +81,12 @@
             aria-hidden="true"></i> URL QR</button>
         <div class="btn-group" style="height: 38px">
           <button type="button" class="btn btn-primary" onclick="downloadPreview()"><i class="fa fa-download"
-              aria-hidden="true"></i> Download</button>
+              aria-hidden="true"></i> Download
+              <select id="downloadOptions">
+                <option value="jpg">jpg</option>
+                <option value="png">png</option>
+                {% comment %} <option value="pdf">pdf</option> {% endcomment %}
+              </select> </button>
           <span class="btn btn-light border quality disabled" style="display: none;"><input type="range"
               class="custom-range quality-val" value="92" data-toggle="tooltip" title="Quality: 92%"></span>
           <button type="button" class="btn btn-primary" onclick="toggleQuality()"><i class="fa fa-chevron-right"

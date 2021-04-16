@@ -1,3 +1,4 @@
+const imagesToPdf = require("images-to-pdf");
 let operations = `[]`;
 let mainCanvas = document.getElementById('canvas');
 let preimg = document.getElementById('base-image-pre');
@@ -21,27 +22,27 @@ let state = {
   temp: 0,
 };
 
-async function getop() {
-  const id = window.location.pathname.slice(
-    25,
-    window.location.pathname.length - 1
-  );
-  await $.get(`/api/database/2/3`, async (data) => {
-    console.log(data);
-    console.log(await data.operations);
 
-    const op = await data.operations;
+async function getop() {
+  const id = window.location.pathname.slice(6,window.location.pathname.length - 1);
+  await $.get(`/api/database/2/${id}`, async (data) => {
+    console.log(data);
+
+    //if you'll use data code will not work use=>data[0]
+    console.log(await data[0].operations);
+
+    const op = await data[0].operations;
 
     const opr = JSON.parse(op);
 
-    certificate_id = data.certificate_id;
+    certificate_id = data[0].certificate_id;
 
     // image_url = data.image_url; //(This url is coming from db)
     image_url =
       'https://image.shutterstock.com/image-photo/bright-spring-view-cameo-island-260nw-1048185397.jpg';
-    console.log(opr, data.name, document.getElementById('temp-name'));
+    console.log(opr, data[0].name, document.getElementById('temp-name'));
     operations = op;
-    document.getElementById('temp-name').value = data.name;
+    document.getElementById('temp-name').value = data[0].name;
     livePreview(null, image_url);
     // operations = await data.temp.operations;
   });
@@ -1135,12 +1136,23 @@ function toggleQuality() {
   else $('.quality')[0].style.display = 'block';
 }
 
+async function createPDF(imgData) {
+  //await imagesToPdf(imgData)
+// path/to/combined.pdf now exists.
+}
+
 function downloadPreview() {
   // console.log("download")
   let a = document.createElement('a');
   a.target = '_blank';
   a.href = mainCanvas.toDataURL('image/jpeg', $('.quality-val')[0].value / 100);
-  a.download = 'preview.jpg';
+  var e = document.getElementById("downloadOptions");
+  var strUser = e.value;
+  if(strUser=="pdf"){
+    createPDF(a)
+  }else{
+  a.download = `preview.${strUser}`;
+  }
   setTimeout(() => {
     a.click();
   }, 500);

@@ -1,35 +1,21 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-// const mongoose = require("mongoose");
 const morgan = require('morgan')
 const template2=require('./models/certificate')
 require('./db/sql');
-// const url = "mongodb://localhost/db";
-// const url ="mongodb://localhost:27017/certificate";
-// mongoose.connect(url, { useNewUrlParser: true });
-
-// app.set("view engine", "ejs");
-// app.set("views", path.join(__dirname, "/themes/views"));
-// app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-
-// const con = mongoose.connection;
-// con.on("open", () => {
-//   console.log("connected");
-// });
+//Creating a certificate template
 app.use("/", express.static(path.join(__dirname, "/public")));
+
+//Editing a certificate template
 app.use("/edit/:id", express.static(path.join(__dirname, "/edit")));
 
-// app.get('/edit/:id', async (req, res) =>
-//   res.sendFile(path.join(__dirname, '/edit/index.html'))
-// );
-
-
+//Fetching all certificate templates
 app.get('/findAll', async (req, res) => {
     try {
       const result = await template2.findAll(
@@ -56,6 +42,7 @@ app.get('/findAll', async (req, res) => {
     }
 });
   
+//Deleting a particular certificate template
 app.get('/delete/:id', async (req, res) => {
     try {
       if (!req.params.id)
@@ -86,6 +73,6 @@ app.get('/delete/:id', async (req, res) => {
     }
 });
 
-//this line execute index.js in api folder
+//using /api
 app.use("/api", require("./routes/index").route);
 app.listen(3434);

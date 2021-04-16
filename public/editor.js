@@ -19,7 +19,6 @@ let state = {
 
 async function getop() {
   await $.get("/api/database/2/abcd", async (data) => {
-    // console.log(data[0].temp.operations);
     operations = await data.temp.operations;
   });
 }
@@ -1116,12 +1115,34 @@ function toggleQuality() {
   else $(".quality")[0].style.display = "block";
 }
 
+// function downloadPreview() {
+//   // console.log("download")
+//   let a = document.createElement("a");
+//   a.target = "_blank";
+//   a.href = mainCanvas.toDataURL("image/jpeg", $(".quality-val")[0].value / 100);
+//   a.download = "preview.jpg";
+//   setTimeout(() => {
+//     a.click();
+//   }, 500);
+// }
+
+async function createPDF(imgData) {
+  // await imagesToPdf(imgData)
+// path/to/combined.pdf now exists.
+}
+
 function downloadPreview() {
   // console.log("download")
-  let a = document.createElement("a");
-  a.target = "_blank";
-  a.href = mainCanvas.toDataURL("image/jpeg", $(".quality-val")[0].value / 100);
-  a.download = "preview.jpg";
+  let a = document.createElement('a');
+  a.target = '_blank';
+  a.href = mainCanvas.toDataURL('image/jpeg', $('.quality-val')[0].value / 100);
+  var e = document.getElementById("downloadOptions");
+  var strUser = e.value;
+  if(strUser=="pdf"){
+    createPDF(a)
+  }else{
+  a.download = `preview.${strUser}`;
+  }
   setTimeout(() => {
     a.click();
   }, 500);
